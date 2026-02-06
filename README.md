@@ -63,7 +63,7 @@ $ntfyServer = "https://ntfy.sh"
 Please make sure to sanitize all configurations that aren't general to all.
 4. **Add comments** throughout for clarity
 5. **Test thoroughly** before committing
-
+6. **Make a new Branch** Add your scripts and then submit a PR
 ---
 
 **Last Updated:** February 2026 | **Version:** 1.0
