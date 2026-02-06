@@ -37,6 +37,7 @@ When adding scripts to this repository, follow these guidelines:
     - **Dependencies** - Required modules/tools (e.g., `Chocolatey`, `PSSQLite`)
     - **Functions** - Primary action the script performs (e.g., `UpgradePowershell`, `CheckUpdates`)
     - **Context** - Environment or target scope (e.g., `System`, `Users`, `Admin`)
+
 2. **Add a synopsis comment block** at the top:
    ```powershell
    <#
@@ -46,23 +47,26 @@ When adding scripts to this repository, follow these guidelines:
        Detailed explanation of functionality and requirements
    #>
    ```
+
 3. **Include CONFIGURATION section** with editable variables at the top
-Most scripts include a `# CONFIGURATION` section **at the top** where you can customize:
+   Most scripts include a `# CONFIGURATION` section **at the top** where you can customize:
+   - 🔔 **ntfy.sh Topic** - Change `$ntfyTopic` for different notification channels
+   - 🌐 **ntfy.sh Server** - Modify `$ntfyServer` if using self-hosted instance
+   - 📂 **Paths** - Update file paths for your environment
+   - ⚙️ **Settings** - Adjust script parameters as needed
 
-- 🔔 **ntfy.sh Topic** - Change `$ntfyTopic` for different notification channels
-- 🌐 **ntfy.sh Server** - Modify `$ntfyServer` if using self-hosted instance
-- 📂 **Paths** - Update file paths for your environment
-- ⚙️ **Settings** - Adjust script parameters as needed
+   **Example:**
+   ```powershell
+   # CONFIGURATION
+   $ntfyTopic = "Insertyourtopicnamehere"
+   $ntfyServer = "https://ntfy.sh"
+   ```
+   ⚠️ Please make sure to sanitize all configurations that aren't general to all.
 
-### ⚡ Example:
-```powershell
-# CONFIGURATION
-$ntfyTopic = "Insertyourtopicnamehere"
-$ntfyServer = "https://ntfy.sh"
-```
-Please make sure to sanitize all configurations that aren't general to all.
 4. **Add comments** throughout for clarity
+
 5. **Test thoroughly** before committing
+
 6. **Make a new Branch** Add your scripts and then submit a PR
 ---
 
