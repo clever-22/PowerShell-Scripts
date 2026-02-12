@@ -8,6 +8,7 @@
 #>
 
 # ----------- User Configuration -----------
+# CHANGE THIS!!!
 
 $targetIP        = "8.8.8.8"               # Host to ping
 $runDurationMin  = 300                     # Total run duration in minutes (480 = 8 hours)

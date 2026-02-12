@@ -7,7 +7,7 @@
     Sometimes needs you to delete Chocolatey ProgramData and rerun for it to work. Or just a reboot if certain dependencies aren't installed.
 #>
 
-# CONFIGURATION
+# CONFIGURATION - CHANGE THIS!!!
 $ntfyTopic = "Insertyourtopicnamehere"
 $ntfyServer = "https://ntfy.sh"
 

@@ -7,7 +7,7 @@
     Good for updating Zoom/Teams to make sure they aren't already in a meeting.
 #>
 
-# CONFIGURATION
+# CONFIGURATION - CHANGE THIS!!!
 $ntfyTopic = "Insertyourtopicnamehere"
 $ntfyServer = "https://ntfy.sh"
 

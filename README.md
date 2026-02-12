@@ -24,6 +24,8 @@ A comprehensive collection of automated PowerShell scripts for system administra
 If you have certain tool scripts please make a new folder for them.
 
 Also, if it's a script for a specific program please make a new folder for them as well.
+
+Scripts will be organized into category folders once sufficient scripts accumulate in each category.
 ```
 Scripts/
 ├── Uniflow/
