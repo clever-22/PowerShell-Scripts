@@ -2,6 +2,10 @@
 
 A comprehensive collection of automated PowerShell scripts for system administration, maintenance, and notifications.
 
+> [!WARNING]  
+> These scripts are **not** official, nor do they have any guarantee backing them.
+> Any script found in this repository is given to the community by the community.
+
 ## 🚀 Getting Started
 
 1. **Clone or download** this repository
