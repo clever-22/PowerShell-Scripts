@@ -1,3 +1,12 @@
+<#
+.SYNOPSIS
+    Monitors network connectivity with ping and logs results to CSV
+.DESCRIPTION
+    Periodically pings a target IP address and logs results to a CSV file.
+    Tracks latency and packet loss, then uploads the log via ntfy.sh notification.
+    Useful for monitoring network stability over extended periods.
+#>
+
 # ----------- User Configuration -----------
 
 $targetIP        = "8.8.8.8"               # Host to ping

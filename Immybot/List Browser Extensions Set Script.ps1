@@ -1,3 +1,12 @@
+<#
+.SYNOPSIS
+    Lists all browser extensions installed in Chrome and Edge
+.DESCRIPTION
+    Scans Chrome and Edge user profile directories to enumerate all installed extensions.
+    Extracts extension metadata including name, ID, version, and description.
+    Exports results to a JSON file for documentation and inventory purposes.
+#>
+
 # Run this in User Context
 # Set output directory and file path
 $outputDir = "C:\Temp"

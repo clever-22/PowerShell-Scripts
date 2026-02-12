@@ -1,4 +1,11 @@
-# Simple script to find all ScreenConnect Client GUIDs on a system
+<#
+.SYNOPSIS
+    Displays all ScreenConnect Client installations and their GUIDs
+.DESCRIPTION
+    Searches the Windows registry to find all installed ScreenConnect Client instances.
+    Extracts and displays the GUID (fingerprint) for each client found.
+    Checks both 64-bit and 32-bit registry locations.
+#>
 
 $registryPaths = @(
     "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*",

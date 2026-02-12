@@ -4,7 +4,7 @@
 .DESCRIPTION
     Takes a screenshot of all monitors and saves it to C:\temp\screenshot.png,
     then sends it to the configured ntfy.sh topic.
-    Good for updating Zoom/Team to make sure they aren't already in a meeting.
+    Good for updating Zoom/Teams to make sure they aren't already in a meeting.
 #>
 
 # CONFIGURATION
