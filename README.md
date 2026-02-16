@@ -39,9 +39,9 @@ Scripts/
 We welcome any helpful and safe scripts! 
 When adding scripts to this repository, follow these guidelines:
 
-1. **Use the naming convention**: `{Dependencies}-{Dependencies}_{Functions}_{Context}.ps1`
-    - **Dependencies** - Required modules/tools (e.g., `Chocolatey`, `PSSQLite`)
+1. **Use the naming convention**: `{Functions}_{Dependencies}_{Context}.ps1`
     - **Functions** - Primary action the script performs (e.g., `UpgradePowershell`, `CheckUpdates`)
+    - **Dependencies** - Required modules/tools (e.g., `Chocolatey`, `PSSQLite`)
     - **Context** - Environment or target scope (e.g., `System`, `Users`, `Admin`)
 
 2. **Add a synopsis comment block** at the top:
