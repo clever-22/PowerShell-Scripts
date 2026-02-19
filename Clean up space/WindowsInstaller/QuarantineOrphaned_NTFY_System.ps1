@@ -257,7 +257,7 @@ Runtime: $($Duration.ToString())
             -H "Tags: calendar,package,warning" `
             -H "Priority: 3" `
             -d $Message `
-            https://ntfy.sh/$NtfyTopic
+            $ntfyServer/$ntfyTopic
     }
     exit
 }
@@ -346,5 +346,5 @@ Runtime: $($Duration.ToString())
         -H "Tags: calendar,package,white_check_mark,recycle" `
         -H "Priority: 3" `
         -d $Message `
-        https://ntfy.sh/$NtfyTopic
+        $ntfyServer/$ntfyTopic
 }

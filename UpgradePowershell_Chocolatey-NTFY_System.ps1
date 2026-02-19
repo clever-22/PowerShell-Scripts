@@ -24,7 +24,7 @@ choco install powershell-core -y --force
 $hostname = $env:COMPUTERNAME
 
 Invoke-RestMethod `
-    -Uri "https://ntfy.sh/$ntfyTopic" `
+    -Uri "$ntfyServer/$ntfyTopic" `
     -Method Post `
     -Body "✅ PowerShell Core upgrade completed on $hostname"
 
