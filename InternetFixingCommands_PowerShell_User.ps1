@@ -22,5 +22,7 @@ netcfg -d
 netsh winsock reset
 netsh int ip reset
 #These just help you get a new ip
-pconfig /release
+ipconfig /release
 ipconfig /renew
+#This flushes dns cache
+ipconfig /flushdns
