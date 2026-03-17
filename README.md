@@ -75,5 +75,37 @@ When adding scripts to this repository, follow these guidelines:
 
 6. **Make a new Branch** Add your scripts and then submit a PR
 ---
+---
 
-**Last Updated:** February 2026 | **Version:** 1.0
+## 🔎 Community Repositories
+
+Below are some cool community PowerShell repositories and projects that may be useful for learning, inspiration, or specific admin tasks.
+
+### 🧰 Tools
+
+These are more focused tools or purpose-built projects for a specific use case.
+
+| Repository | Purpose | Notes |
+|---|---|---|
+| [BornToBeRoot/PowerShell_IPv4NetworkScanner](https://github.com/BornToBeRoot/PowerShell_IPv4NetworkScanner) | Asynchronous IPv4 network scanner | Focused network scanning tool for PowerShell. [1](https://github.com/BornToBeRoot/PowerShell_IPv4NetworkScanner) |
+| [last-byte/PersistenceSniper](https://github.com/last-byte/PersistenceSniper) | Windows persistence hunting module | Built for blue teams, incident responders, and sysadmins. [2](https://github.com/last-byte/PersistenceSniper) |
+| [Micke-K/IntuneManagement](https://github.com/Micke-K/IntuneManagement) | Intune/Azure policy management tool | Supports export, import, compare, document, and edit workflows with PowerShell and WPF UI. [3](https://github.com/Micke-K/IntuneManagement) |
+| [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat?pubDate=20260305) | Windows 10/11 debloat and customization script | Removes preinstalled apps, reduces telemetry, and applies Windows customization changes. [4](https://github.com/Raphire/Win11Debloat?pubDate=20260305) |
+
+### 📚 Collections
+
+These are broader repositories that contain many scripts, modules, or categorized utilities.
+
+| Repository | Focus | Notes |
+|---|---|---|
+| [ruudmens/LazyAdmin](https://github.com/ruudmens/LazyAdmin) | General SysAdmin script collection | Includes folders for Active Directory, AzureAD, Exchange, Office 365, Teams, Windows, UniFi VPN, and more. [5](https://github.com/ruudmens/LazyAdmin) |
+| [fleschutz/PowerShell](https://github.com/fleschutz/PowerShell) | Large cross-platform PowerShell script library | Contains 600+ standalone scripts for Linux, macOS, and Windows. [6](https://github.com/fleschutz/PowerShell) |
+| [nickrod518/PowerShell-Scripts](https://github.com/nickrod518/PowerShell-Scripts) | Enterprise admin script collection | Covers SCCM, MSO, AD, Exchange, SharePoint, printers, updates, and more. [7](https://github.com/nickrod518/PowerShell-Scripts) |
+| [jhochwald/PowerShell-collection](https://github.com/jhochwald/PowerShell-collection) | PowerShell scripts, tools, and modules | Includes categories like Active Directory, AzureAD, Exchange, Graph, Intune, Microsoft 365, Teams, UniFi, and WSUS. [8](https://github.com/jhochwald/PowerShell-collection) |
+| [bastienperez/PowerShell-Toolbox](https://github.com/bastienperez/PowerShell-Toolbox) | Small utility/toolbox repository | A set of useful PowerShell scripts and helper utilities. [9](https://github.com/bastienperez/PowerShell-Toolbox) |
+
+> [!NOTE]
+> External repositories listed here are maintained by their respective authors.
+> Please review all scripts carefully before use and test in a safe environment first.
+
+**Last Updated:** March 2026 | **Version:** 1.0
