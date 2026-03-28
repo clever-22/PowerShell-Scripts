@@ -75,7 +75,6 @@ When adding scripts to this repository, follow these guidelines:
 
 6. **Make a new Branch** Add your scripts and then submit a PR
 ---
----
 
 ## 🔎 Community Repositories
 
