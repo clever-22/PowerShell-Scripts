@@ -1,0 +1,1 @@
+New-PSDrive -Name "Q" -PSProvider "FileSystem" -Root "\\192.168.126.152\Business Quickbooks" -Persist -Credential (New-Object PSCredential ("Domain\username", (ConvertTo-SecureString "supersecurepassword" -AsPlainText -Force)))
