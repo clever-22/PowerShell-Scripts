@@ -1,25 +1,61 @@
 <#
 .SYNOPSIS
-    Displays all saved Wi-Fi network credentials
-.DESCRIPTION
-    Retrieves all saved Wi-Fi profiles on the system and displays the network name (SSID) 
-    and password for each profile. 
+    Shows pending Windows updates, recent hotfixes with real install times, and last reboot.
 #>
 
-$profiles = netsh wlan show profiles
+# CONFIGURATION - CHANGE THIS!!!
+$ntfyTopic  = "Insertyourtopicnamehere"
+$ntfyServer = "https://ntfy.sh"
 
-$ssids = $profiles | Where-Object { $_ -match "All User Profile\s*:\s*(.+)" } | ForEach-Object {
-    $matches[1].Trim()
+$lines = @()
+
+# --- Pending Updates ---
+$updateSession  = New-Object -ComObject Microsoft.Update.Session
+$updateSearcher = $updateSession.CreateUpdateSearcher()
+$searchResult   = $updateSearcher.Search("IsInstalled=0 and IsHidden=0 and Type='Software'")
+
+$lines += "Pending updates: $($searchResult.Updates.Count)"
+foreach ($u in $searchResult.Updates) {
+    $lines += " - $($u.Title)"
 }
 
-foreach ($ssid in $ssids) {
-    Write-Host "`n--- $ssid ---"
-    $profile = netsh wlan show profile name="$ssid" key=clear
-    $keyLine = $profile | Where-Object { $_ -match "Key Content\s*:\s*(.+)" } | Select-Object -First 1
-    if ($keyLine) {
-        $password = ($keyLine -split ":\s*", 2)[1].Trim()
-        Write-Host "Password: $password"
+# --- Last Reboot ---
+$lastBoot = (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
+$uptime   = (Get-Date) - $lastBoot
+$lines += ""
+$lines += "Last reboot: $($lastBoot.ToString('yyyy-MM-dd HH:mm:ss'))"
+$lines += "Uptime: $([int]$uptime.TotalDays)d $($uptime.Hours)h $($uptime.Minutes)m"
+
+# --- Recent Hotfixes with real install times ---
+$lines += ""
+$lines += "Latest installed hotfixes:"
+
+# Pull WU client install-success events (System log, ID 19)
+$wuEvents = Get-WinEvent -FilterHashtable @{
+    LogName      = 'System'
+    ProviderName = 'Microsoft-Windows-WindowsUpdateClient'
+    ID           = 19
+} -ErrorAction SilentlyContinue
+
+$hotfixes = Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 10
+
+foreach ($hf in $hotfixes) {
+    $kb    = $hf.HotFixID
+    $match = $wuEvents | Where-Object { $_.Message -match "\b$kb\b" } | Select-Object -First 1
+    if ($match) {
+        $installTime = $match.TimeCreated.ToString('yyyy-MM-dd HH:mm:ss')
     } else {
-        Write-Host "Password: Not found / Enterprise Wi-Fi"
+        $installTime = $hf.InstalledOn.ToString('yyyy-MM-dd') + ' (date only)'
     }
+    $lines += "$installTime  $kb"
 }
+
+# --- Send notification ---
+$message  = $lines -join "`n"
+$hostname = $env:COMPUTERNAME
+
+Invoke-RestMethod `
+    -Uri "$ntfyServer/$ntfyTopic" `
+    -Method Post `
+    -Headers @{ Title = "$hostname - Windows Updates" } `
+    -Body $message
