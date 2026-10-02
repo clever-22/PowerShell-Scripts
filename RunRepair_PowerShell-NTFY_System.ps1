@@ -1,83 +1,126 @@
-# CONFIGURATION
-$ntfyTopic  = ""
-$ntfyServer = "https://ntfy.sh"
+. {
 
-$log = @()
+# ============================================================
+#  DISM + SFC health check -> ntfy summary
+#  Paste-safe: executes as one block, no per-line prompts
+# ============================================================
 
-$log += "-- CheckHealth --"
-$checkHealth = DISM /Online /Cleanup-Image /CheckHealth 2>&1
-$log += $checkHealth
+$NtfyTopic  = "Insertyourtopicnamehere"
+$NtfyServer = "https://ntfy.sh"
 
-$log += "-- ScanHealth --"
-$scanHealth = DISM /Online /Cleanup-Image /ScanHealth 2>&1
-$log += $scanHealth
+$ErrorActionPreference = 'Continue'
+$ProgressPreference    = 'SilentlyContinue'
+$ConfirmPreference     = 'None'
+$InformationPreference = 'SilentlyContinue'
 
-$log += "-- RestoreHealth --"
-$restoreHealth = DISM /Online /Cleanup-Image /RestoreHealth 2>&1
-$log += $restoreHealth
+# --- Elevation check: fail fast instead of hanging on UAC ---
+$isAdmin = ([Security.Principal.WindowsPrincipal] `
+            [Security.Principal.WindowsIdentity]::GetCurrent()
+           ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
-$log += "-- SFC --"
-$sfcOutput = ((sfc /scannow 2>&1 | Out-String) -replace "`0","")
-$log += $sfcOutput -split "`r?`n"
-
-# Remove noise
-$clean = $log | Where-Object {
-    $_.Trim() -ne '' -and
-    $_ -notmatch 'Deployment Image Servicing|^Version:|^Image Version:'
+if (-not $isAdmin) {
+    Write-Output "ERROR: Must run elevated. Aborting."
+    return
 }
 
-# Detect corruption state
-$corruptionFound = $false
+# --- Helper: run native cmd, strip CR progress bars + UTF-16 nulls ---
+function Get-CleanOutput {
+    param([scriptblock]$Command)
 
-if (
-    $clean -match "component store corruption" -or
-    $clean -match "corrupt files" -or
-    $clean -match "could not be repaired" -or
-    $clean -match "repairable"
-) {
-    $corruptionFound = $true
+    $raw = (& $Command 2>&1 | Out-String) -replace "`0", ""
+    $raw = $raw -replace "`r`n", "`n" -replace "`r", "`n"
+
+    ($raw -split "`n") | ForEach-Object { $_.Trim() } | Where-Object {
+        $_ -ne ''                                       -and
+        $_ -notmatch '^\['                              -and
+        $_ -notmatch '%'                                -and
+        $_ -notmatch 'Deployment Image Servicing'       -and
+        $_ -notmatch '^Version:'                        -and
+        $_ -notmatch '^Image Version:'                  -and
+        $_ -notmatch 'Beginning system scan'            -and
+        $_ -notmatch 'Beginning verification phase'     -and
+        $_ -notmatch 'This process will take some time' -and
+        $_ -notmatch 'Do not close this Command Prompt'
+    }
 }
 
-# Detect reboot required
+$results = @()
+
+# --- DISM RestoreHealth (scans + repairs in one pass) ---
+Write-Output "Running DISM RestoreHealth..."
+$dismLines = Get-CleanOutput { DISM.exe /Online /Cleanup-Image /RestoreHealth /NoRestart /Quiet }
+$dismExit  = $LASTEXITCODE
+$dismText  = $dismLines -join ' '
+
+switch -Regex ($dismText) {
+    'The restore operation completed successfully' { $results += "DISM: Restore completed successfully." ; break }
+    'No component store corruption detected'       { $results += "DISM: No corruption detected."         ; break }
+    'The component store is repairable'            { $results += "DISM: Repairable corruption found."    ; break }
+    'The source files could not be found'          { $results += "DISM: FAILED - source files not found."; break }
+    default {
+        if ($dismExit -eq 0) { $results += "DISM: Completed (exit 0)." }
+        else                 { $results += "DISM: Exit code $dismExit - see C:\Windows\Logs\DISM\dism.log." }
+    }
+}
+
+# --- SFC ---
+Write-Output "Running SFC /scannow..."
+$sfcLines = Get-CleanOutput { sfc.exe /scannow }
+$sfcExit  = $LASTEXITCODE
+$sfcText  = $sfcLines -join ' '
+
+switch -Regex ($sfcText) {
+    'did not find any integrity violations'                  { $results += "SFC: No integrity violations."               ; break }
+    'found corrupt files and successfully repaired them'     { $results += "SFC: Corruption found and repaired."         ; break }
+    'found corrupt files but was unable to fix some of them' { $results += "SFC: Corruption found - NOT fully repaired." ; break }
+    'could not perform the requested operation'              { $results += "SFC: Could not run - try Safe Mode."         ; break }
+    default {
+        if ($sfcExit -eq 0) { $results += "SFC: Completed (exit 0)." }
+        else                { $results += "SFC: Exit code $sfcExit - see C:\Windows\Logs\CBS\CBS.log." }
+    }
+}
+
+# --- Status flags ---
+$corruptionFound = ($dismText -match 'component store is repairable') -or
+                   ($sfcText  -match 'found corrupt files')
+
+$repairFailed    = ($sfcText  -match 'unable to fix some of them') -or
+                   ($dismText -match 'source files could not be found')
+
 $reboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending') -or
           (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired')
 
-# Build status banner
 $status = @()
+if     ($repairFailed)    { $status += "❌ Repair Incomplete" }
+elseif ($corruptionFound) { $status += "⚠️ Corruption Found - Repaired" }
+else                      { $status += "✅ No Corruption Detected" }
 
-if ($corruptionFound) {
-    $status += "❌ Corruption Found"
-} else {
-    $status += "✅ No Corruption Detected"
-}
-
-if ($reboot) {
-    $status += "⚠️ Reboot Required"
-} else {
-    $status += "✅ No Reboot Required"
-}
-
-$summary = ($status -join " | ")
+if ($reboot) { $status += "⚠️ Reboot Required" } else { $status += "✅ No Reboot Required" }
 
 $body = @"
-$summary
+$($status -join " | ")
 
 Computer: $env:COMPUTERNAME
+Time:     $(Get-Date -Format 'yyyy-MM-dd HH:mm')
 
-$($clean -join "`n")
+$($results -join "`n")
 "@
 
-# ntfy 4KB limit
-if ($body.Length -gt 3900) {
-    $body = $body.Substring($body.Length - 3900)
+if ($body.Length -gt 3900) { $body = $body.Substring(0, 3900) }
+
+$priority = if ($repairFailed) { "high" } elseif ($corruptionFound -or $reboot) { "default" } else { "low" }
+
+try {
+    Invoke-RestMethod -Uri "$NtfyServer/$NtfyTopic" -Method Post `
+        -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) `
+        -Headers @{ Title = "DISM/SFC - $env:COMPUTERNAME"; Priority = $priority } `
+        -TimeoutSec 30 | Out-Null
+}
+catch {
+    Write-Output "ntfy post failed: $($_.Exception.Message)"
 }
 
-Invoke-RestMethod -Uri "$ntfyServer/$ntfyTopic" -Method Post `
-    -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) `
-    -Headers @{
-        Title = "DISM/SFC - $env:COMPUTERNAME"
-        Priority = if ($corruptionFound) { "high" } elseif ($reboot) { "default" } else { "low" }
-    }
+Write-Output ""
+Write-Output $body
 
-Write-Host $body
-
+}
