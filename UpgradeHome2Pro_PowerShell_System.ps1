@@ -13,7 +13,7 @@ changepk.exe /productkey VK7JG-NPHTM-C97JM-9MPGT-3V66T
 shutdown /r /t 0
 # --- After reboot, run the following ---
 
-# Step 5: Install your valid Pro license key
+# Step 5: Install your valid Pro license key. IMPORTANT!!! Switch out for the real key.
 slmgr.vbs /ipk YOUR-REAL-PRO-KEY-HERE
 
 # Step 6: Activate
