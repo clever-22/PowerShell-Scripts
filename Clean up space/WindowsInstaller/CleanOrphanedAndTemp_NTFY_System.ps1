@@ -1,12 +1,14 @@
 #Requires -RunAsAdministrator
 <#
 .SYNOPSIS
-    Cleans orphaned MSP files from Windows Installer folder and purges temp directories.
+    Quarantines orphaned Windows Installer MSP files and cleans temporary folders.
 .DESCRIPTION
-    1. Scans C:\Windows\Installer for orphaned MSP patch files with NO metadata.
-       Moves them directly to a quarantine folder (no zip, no prompts).
-    2. Cleans C:\Temp and C:\Windows\Temp.
-    Sends an ntfy.sh notification when complete.
+    Requires administrator privileges. Scans C:\Windows\Installer for orphaned MSP
+    patch files and moves only files without metadata to a timestamped quarantine
+    folder. Orphaned files with metadata are preserved.
+
+    Cleans C:\Temp and C:\Windows\Temp, displays a cleanup summary, and sends an
+    ntfy.sh notification when complete.
 #>
 
 # CONFIGURATION - CHANGE THIS!!!

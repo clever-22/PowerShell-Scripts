@@ -3,6 +3,10 @@
 <#
 .SYNOPSIS
     Removes Microsoft Teams (Classic) local data folders using Get/Set/Test pattern.
+.DESCRIPTION
+    Supports get, set, and test operations for Microsoft Teams (Classic) folders
+    under local user profiles. The set operation removes matching folders, while
+    get and test report whether those folders are present.
 .PARAMETER Method
     The method to execute: get, set, or test
 #>

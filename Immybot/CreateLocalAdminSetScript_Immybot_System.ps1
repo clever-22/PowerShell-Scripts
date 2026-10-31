@@ -1,3 +1,11 @@
+<#
+.SYNOPSIS
+    Creates a local administrator account.
+.DESCRIPTION
+    Creates the configured local user with a secure string password and adds the
+    user to the local Administrators group.
+#>
+
 # Variables
 $username = "Local-Admin"
 $passwordPlain = "Put-Something-Here-That-Is-Hopefully-Secure" # CHANGE THIS!  
