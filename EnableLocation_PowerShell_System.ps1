@@ -1,3 +1,12 @@
+<#
+.SYNOPSIS
+    Enables Windows location services for the computer.
+.DESCRIPTION
+    Allows location access through the system capability settings, starts the
+    Geolocation Service, and displays relevant policy and registry values for
+    troubleshooting.
+#>
+
 Set-ItemProperty -Path "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location"
 -Name Value `
 -Value Allow

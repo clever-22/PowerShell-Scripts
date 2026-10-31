@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+    Reviews and removes Chrome and Edge site notification permissions.
+.DESCRIPTION
+    Scans browser preference files for notification permissions across local
+    user profiles, displays the discovered sites, and interactively removes
+    selected entries after creating a backup of each modified preferences file.
+    Run in a context with access to the target user profiles.
+#>
+
 Add-Type -AssemblyName System.Web.Extensions
 $ser = New-Object System.Web.Script.Serialization.JavaScriptSerializer
 $ser.MaxJsonLength = 2147483647

@@ -1,3 +1,12 @@
+<#
+.SYNOPSIS
+    Displays DHCP utilization for a selected IPv4 scope.
+.DESCRIPTION
+    Lists the DHCP scopes available on the local server, prompts for a scope,
+    and displays its free, in-use, reserved, and percentage-in-use statistics.
+    Run on the DHCP server with administrator permissions.
+#>
+
 # --- DHCP Scope Picker (run as Administrator ON the DHCP server) ---
 $scopes = Get-DhcpServerv4Scope
 

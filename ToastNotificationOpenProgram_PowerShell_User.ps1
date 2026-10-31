@@ -1,3 +1,12 @@
+<#
+.SYNOPSIS
+    Shows a toast notification with Calculator and File Explorer launchers.
+.DESCRIPTION
+    Builds a Windows toast notification for the logged-in user, creates helper
+    scripts and command files in the temporary directory, and registers the
+    notification actions for opening Calculator or File Explorer.
+#>
+
 # Custom Toast Notification with Calculator and File Explorer Launchers
 # Based on SMBtotheCloud's toast notification guide
 

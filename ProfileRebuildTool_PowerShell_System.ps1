@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+    Interactively selects and rebuilds a Windows user profile.
+.DESCRIPTION
+    Lists or searches registered local user profiles, groups related profile
+    registry entries, and lets an administrator select a profile for rebuild.
+    The selected profile is renamed and its registry configuration is updated;
+    review the prompts carefully before confirming the operation.
+#>
+
 # ============================================================
 # Interactive User Profile Rebuild Tool (v2)
 # Run as Administrator

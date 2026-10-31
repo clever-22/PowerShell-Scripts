@@ -1,3 +1,12 @@
+<#
+.SYNOPSIS
+    Displays a branded warning toast about a 10 PM restart.
+.DESCRIPTION
+    Downloads configured logo assets, registers a per-user toast application,
+    and displays an informational Windows notification with website and
+    dismiss actions. This script does not schedule or perform a restart.
+#>
+
 # Restart Warning Toast - Generic Branded Template
 # Informational only. Does not schedule or perform the restart.
 # Run as the logged-in USER (not SYSTEM) or the toast will not appear.

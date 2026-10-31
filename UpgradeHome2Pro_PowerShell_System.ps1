@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+    Changes a Windows Home edition installation to Pro.
+.DESCRIPTION
+    Displays the current and available Windows editions, applies the generic
+    Microsoft Pro installation key, and reboots the computer. After reboot,
+    replace the placeholder with a valid license key and activate Windows.
+    Run as administrator.
+#>
+
 # Run PowerShell as Administrator
 
 # Step 1: (Optional) Check current edition

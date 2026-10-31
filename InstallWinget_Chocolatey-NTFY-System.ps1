@@ -1,10 +1,11 @@
 <#
 .SYNOPSIS
-    Installs Chocolatey and installs Winget
+    Installs Chocolatey and the WinGet PowerShell packages.
 .DESCRIPTION
-    Installs the Chocolatey package manager and uses it to install installs Winget.
-    Sends ntfy.sh notification when upgrade is complete.
-    Sometimes needs you to delete Chocolatey ProgramData and rerun for it to work. Or just a reboot if certain dependencies aren't installed.
+    Installs Chocolatey, uses it to install or reinstall winget-cli and
+    winget.powershell, and sends a completion notification to ntfy.sh.
+    A reboot or removal of Chocolatey ProgramData may be required if package
+    dependencies are not available.
 #>
 
 # CONFIGURATION - CHANGE THIS!!!
@@ -28,4 +29,3 @@ Invoke-RestMethod `
     -Uri "$ntfyServer/$ntfyTopic" `
     -Method Post `
     -Body "Install completed on $hostname"
-

@@ -1,6 +1,10 @@
 <#
 .SYNOPSIS
-    Get public IP location and send to ntfy server.
+    Retrieves public IP and geolocation details and sends them to ntfy.
+.DESCRIPTION
+    Queries the public IP geolocation service, formats the host, user, network,
+    and map details, and posts a location report or failure notification to the
+    configured ntfy topic.
 #>
 
 # ===== CONFIG =====

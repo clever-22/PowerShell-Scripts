@@ -1,3 +1,12 @@
+<#
+.SYNOPSIS
+    Runs DISM and SFC repairs and sends a summary to ntfy.
+.DESCRIPTION
+    Requires administrator privileges, runs DISM RestoreHealth followed by
+    SFC /scannow, summarizes the detected repair status, and posts the results
+    to the configured ntfy topic.
+#>
+
 . {
 
 # ============================================================

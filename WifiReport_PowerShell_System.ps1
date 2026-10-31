@@ -1,3 +1,12 @@
+<#
+.SYNOPSIS
+    Generates and opens the Windows WLAN report.
+.DESCRIPTION
+    Runs netsh wlan show wlanreport, reads the latest report path, summarizes
+    discovered BSSIDs and SSIDs, and opens the generated HTML report when it
+    is available.
+#>
+
 # Generate the report
 netsh wlan show wlanreport
 
