@@ -1,0 +1,2 @@
+@echo off
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -NoExit -File ""C:\Scripts\Cleanup-InstallerAndTemp.ps1""' -Verb RunAs"
