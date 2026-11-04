@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Runs DISM and SFC repairs and sends a summary to ntfy.
+    Runs DISM and SFC repairs and sends a summary to ntfy. V2 - NOT TESTED
 .DESCRIPTION
-    Requires administrator privileges, runs DISM RestoreHealth followed by
-    SFC /scannow, summarizes the detected repair status, and posts the results
-    to the configured ntfy topic.
+    Requires administrator privileges. Runs DISM CheckHealth, ScanHealth,
+    RestoreHealth, then SFC /scannow, summarizes the detected repair status,
+    and posts the results to the configured ntfy topic.
 #>
 
 . {
@@ -55,20 +55,44 @@ function Get-CleanOutput {
 
 $results = @()
 
-# --- DISM RestoreHealth (scans + repairs in one pass) ---
+# --- DISM CheckHealth (quick flag check) ---
+Write-Output "Running DISM CheckHealth..."
+$checkLines = Get-CleanOutput { DISM.exe /Online /Cleanup-Image /CheckHealth }
+$checkExit  = $LASTEXITCODE
+$checkText  = $checkLines -join ' '
+
+switch -Regex ($checkText) {
+    'not repairable'                         { $results += "CheckHealth: Corruption NOT repairable."       ; break }
+    'component store is repairable'          { $results += "CheckHealth: Corruption flagged (repairable)." ; break }
+    'No component store corruption detected' { $results += "CheckHealth: No corruption flagged."           ; break }
+    default                                  { $results += "CheckHealth: Exit code $checkExit." }
+}
+
+# --- DISM ScanHealth (full scan) ---
+Write-Output "Running DISM ScanHealth..."
+$scanLines = Get-CleanOutput { DISM.exe /Online /Cleanup-Image /ScanHealth }
+$scanExit  = $LASTEXITCODE
+$scanText  = $scanLines -join ' '
+
+switch -Regex ($scanText) {
+    'not repairable'                         { $results += "ScanHealth: Corruption NOT repairable."   ; break }
+    'component store is repairable'          { $results += "ScanHealth: Repairable corruption found." ; break }
+    'No component store corruption detected' { $results += "ScanHealth: No corruption detected."      ; break }
+    default                                  { $results += "ScanHealth: Exit code $scanExit." }
+}
+
+# --- DISM RestoreHealth (repair) ---
 Write-Output "Running DISM RestoreHealth..."
-$dismLines = Get-CleanOutput { DISM.exe /Online /Cleanup-Image /RestoreHealth /NoRestart /Quiet }
+$dismLines = Get-CleanOutput { DISM.exe /Online /Cleanup-Image /RestoreHealth /NoRestart }
 $dismExit  = $LASTEXITCODE
 $dismText  = $dismLines -join ' '
 
 switch -Regex ($dismText) {
-    'The restore operation completed successfully' { $results += "DISM: Restore completed successfully." ; break }
-    'No component store corruption detected'       { $results += "DISM: No corruption detected."         ; break }
-    'The component store is repairable'            { $results += "DISM: Repairable corruption found."    ; break }
-    'The source files could not be found'          { $results += "DISM: FAILED - source files not found."; break }
+    'The restore operation completed successfully' { $results += "RestoreHealth: Restore completed successfully." ; break }
+    'The source files could not be found'          { $results += "RestoreHealth: FAILED - source files not found." ; break }
     default {
-        if ($dismExit -eq 0) { $results += "DISM: Completed (exit 0)." }
-        else                 { $results += "DISM: Exit code $dismExit - see C:\Windows\Logs\DISM\dism.log." }
+        if ($dismExit -eq 0) { $results += "RestoreHealth: Completed (exit 0)." }
+        else                 { $results += "RestoreHealth: Exit code $dismExit - see C:\Windows\Logs\DISM\dism.log." }
     }
 }
 
@@ -90,11 +114,14 @@ switch -Regex ($sfcText) {
 }
 
 # --- Status flags ---
-$corruptionFound = ($dismText -match 'component store is repairable') -or
-                   ($sfcText  -match 'found corrupt files')
+$corruptionFound = ($checkText -match 'component store is repairable') -or
+                   ($scanText  -match 'component store is repairable') -or
+                   ($sfcText   -match 'found corrupt files')
 
-$repairFailed    = ($sfcText  -match 'unable to fix some of them') -or
-                   ($dismText -match 'source files could not be found')
+$repairFailed    = ($checkText -match 'not repairable') -or
+                   ($scanText  -match 'not repairable') -or
+                   ($dismText  -match 'source files could not be found') -or
+                   ($sfcText   -match 'unable to fix some of them')
 
 $reboot = (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending') -or
           (Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired')
